@@ -13,8 +13,8 @@ import {
 import { FlatfileRecord, FlatfileRecords } from '@flatfile/hooks'
 import fetch from 'node-fetch'
 
-const Employees = new Sheet(
-  'Employees',
+const Supplemental1 = new Sheet(
+  'Supplemental1',
   {
     firstName: TextField({
       required: true,
@@ -79,16 +79,16 @@ const Employees = new Sheet(
   }
 )
 
-const EmployeesPortal = new Portal({
-  name: 'EmployeesPortal',
-  sheet: 'Employees'
+const Supplemental1Portal = new Portal({
+  name: 'Supplemental1Portal',
+  sheet: 'Supplemental1'
 })
 
 export default new Workbook({
-  name: 'Employees',
-  namespace: 'employee',
+  name: 'Supplemental1',
+  namespace: 'supplemental1',
   sheets: {
-    Employees,
+    Supplemental1,
   },
-  portals: [EmployeesPortal],
+  portals: [Supplemental1Portal],
 })
