@@ -54,7 +54,7 @@ const Branch_Supplemental = new Sheet(
     },
     }),
     alt_region_name: TextField({
-      label: "Alt Region Code",
+      label: "Alt Region Name",
       validate: (alt_region_name: string) => {
         const alphaRegex = /^[a-z0-9]+$/i
         if (!alphaRegex.test(alt_region_name)) {
