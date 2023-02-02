@@ -21,7 +21,7 @@ export default new Agent({
       },
     }),
 
-    Contact: new SpaceConfig({
+    CustomerAllocatedSalesCommission: new SpaceConfig({
       name: 'Customer Allocated Sales Commission',
       slug: 'CustomerAllocatedSalesCommissionsc',
       workbookConfigs: {
@@ -35,7 +35,7 @@ export default new Agent({
         }),
       },
     }),
-    Matter: new SpaceConfig({
+    CustomerRebates: new SpaceConfig({
       name: 'Customer Rebates',
       slug: 'CustomerRebatessc',
       workbookConfigs: {
