@@ -1,7 +1,85 @@
-import { NumberField, OptionField, Sheet, TextField } from '@flatfile/configure'
+import {
+  NumberField,
+  OptionField,
+  Sheet,
+  TextField,
+  Action,
+} from '@flatfile/configure'
 import { SmartDateField } from '../SmartDateField'
 import { validateRegex } from '../common/common'
 import { branchCode } from '../common/regex'
+
+const axios = require('axios')
+const FormData = require('form-data')
+
+async function generateJSON(event: any, sheetName: string, data: any) {
+  const formData = new FormData()
+  formData.append('spaceId', event.context.spaceId)
+
+  formData.append('environmentId', event.context.environmentId)
+  formData.append('file', JSON.stringify(data), {
+    filename: `Sheet ${sheetName}.json`,
+  })
+
+  try {
+    await axios.post(`v1/files`, formData, {
+      headers: formData.getHeaders(),
+      transformRequest: () => formData,
+    })
+  } catch (error) {
+    console.log(`upload error: ${JSON.stringify(error, null, 2)}`)
+  }
+}
+
+const GenerateJSONAction = new Action(
+  {
+    slug: 'generateJSON',
+    label: 'Generate JSON',
+    description: 'Generate a JSON file based off of the Data in this Sheet',
+  },
+  async (e) => {
+    const sheetName = e.context.actionName.split(':')[0]
+    try {
+      const data = (await e.data).records
+      await generateJSON(e, sheetName, data)
+    } catch (error) {
+      console.log(
+        `GenerateJSONAction[error]: ${JSON.stringify(error, null, 2)}`
+      )
+    }
+  }
+)
+
+async function executeValidation(event: any) {
+  const workbookId = event.context.workbookId
+  const sheetId = event.context.sheetId
+
+  try {
+    await axios.post(
+      `v1/workbooks/${workbookId}/sheets/${sheetId}/validate`,
+      {}
+    )
+  } catch (error) {
+    console.log(`validation error: ${JSON.stringify(error, null, 2)}`)
+  }
+}
+
+const executeValidationAction = new Action(
+  {
+    slug: 'executeValidation',
+    label: 'Execute Validation',
+    description: 'Executes Validations on the Data in this Sheet',
+  },
+  async (e) => {
+    try {
+      await executeValidation(e)
+    } catch (error) {
+      console.log(
+        `executeValidationAction[error]: ${JSON.stringify(error, null, 2)}`
+      )
+    }
+  }
+)
 
 const Branch_Supplemental = new Sheet(
   'Branch Supplemental',
@@ -161,6 +239,10 @@ const Branch_Supplemental = new Sheet(
     //   record.set('open_date', openDate[0].start.date())
     //   return record
     // }
+    actions: {
+      GenerateJSONAction,
+      executeValidationAction,
+    },
   }
 )
 
